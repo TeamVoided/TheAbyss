@@ -19,12 +19,27 @@ repositories {
 
 modSettings {
     modId(modid)
-    modName("Team Voided Template")
+    modName("The Abyss")
 
     entrypoint("main", "org.teamvoided.theabyss.Abyss::commonInit")
     entrypoint("client", "org.teamvoided.theabyss.Abyss::clientInit")
+    entrypoint("fabric-datagen", "org.teamvoided.theabyss.AbyssData")
 
-    mixinFile("the-abyss.mixins.json")
+    mixinFile("$modid.mixins.json")
+}
+
+loom {
+    runs {
+        // This adds a new gradle task that runs the datagen API: "gradlew runDatagen"
+        create("DataGen") {
+            client()
+            ideConfigGenerated(true)
+            vmArg("-Dfabric-api.datagen")
+            vmArg("-Dfabric-api.datagen.output-dir=${file("src/main/generated")}")
+            vmArg("-Dfabric-api.datagen.modid=abyssal_depths")
+            runDir("build/datagen")
+        }
+    }
 }
 
 tasks {
@@ -43,3 +58,6 @@ tasks {
         withSourcesJar()
     }
 }
+
+// Add the generated resources to the main source set
+sourceSets["main"].resources.srcDir("src/main/generated")
